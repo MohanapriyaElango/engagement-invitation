@@ -169,11 +169,16 @@
         }
     }, { passive: true });
 
-    // Touch events
+    // Touch events - prevent pull-to-refresh on mobile
     document.addEventListener('touchstart', function(e) {
         if (!isEnvelopeOpen) return;
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+        // Always prevent pull-to-refresh and bounce effects
+        e.preventDefault();
+    }, { passive: false });
 
     document.addEventListener('touchend', function(e) {
         if (!isEnvelopeOpen) return;
@@ -440,24 +445,31 @@
 
         // Scratch functionality
         let isScratching = false;
+        let scratchCount = 0; // Count touch/click interactions
 
         ctx.globalCompositeOperation = 'destination-out';
 
         function scratch(x, y) {
             ctx.beginPath();
-            ctx.arc(x, y, 40, 0, Math.PI * 2);
+            ctx.arc(x, y, 50, 0, Math.PI * 2);
             ctx.fill();
 
-            // Add some randomness for natural feel
-            for (let i = 0; i < 5; i++) {
-                const randomX = x + (Math.random() - 0.5) * 40;
-                const randomY = y + (Math.random() - 0.5) * 40;
+            // Big random splashes for easy clearing
+            for (let i = 0; i < 6; i++) {
+                const randomX = x + (Math.random() - 0.5) * 60;
+                const randomY = y + (Math.random() - 0.5) * 60;
                 ctx.beginPath();
-                ctx.arc(randomX, randomY, 18, 0, Math.PI * 2);
+                ctx.arc(randomX, randomY, 25, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            checkScratchProgress();
+            scratchCount++;
+            // After 50 scratch movements, auto-reveal!
+            if (scratchCount >= 50 && !scratchRevealed) {
+                scratchRevealed = true;
+                document.getElementById('scratch-hint').classList.add('hidden');
+                animateFullReveal(canvas, ctx);
+            }
         }
 
         function getPosition(e) {
@@ -491,6 +503,7 @@
 
         // Touch events
         canvas.addEventListener('touchstart', function(e) {
+            if (scratchRevealed) return; // Let global handler take over
             e.preventDefault();
             e.stopPropagation();
             isScratching = true;
@@ -499,6 +512,7 @@
         });
 
         canvas.addEventListener('touchmove', function(e) {
+            if (scratchRevealed) return; // Let global handler take over
             e.preventDefault();
             e.stopPropagation();
             if (!isScratching) return;
@@ -507,42 +521,13 @@
         });
 
         canvas.addEventListener('touchend', function(e) {
+            if (scratchRevealed) return; // Let global handler take over
             e.preventDefault();
             isScratching = false;
         });
     }
 
-    function checkScratchProgress() {
-        if (scratchRevealed) return;
-
-        const canvas = document.getElementById('scratch-canvas');
-        const ctx = canvas.getContext('2d');
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
-        let transparent = 0;
-        const total = pixels.length / 4;
-
-        for (let i = 3; i < pixels.length; i += 4) {
-            if (pixels[i] === 0) transparent++;
-        }
-
-        scratchPercentage = (transparent / total) * 100;
-
-        const hint = document.getElementById('scratch-hint');
-        
-        if (scratchPercentage > 15) {
-            hint.textContent = '✨ Almost there... ✨';
-        }
-
-        // Like GPay: once ~25% scratched, auto-clear the entire card
-        if (scratchPercentage > 25) {
-            scratchRevealed = true;
-            hint.classList.add('hidden');
-            
-            // Animate erasing remaining scratch layer (expanding circles from center)
-            animateFullReveal(canvas, ctx);
-        }
-    }
+    // checkScratchProgress is now handled by scratchCount in scratch() function
 
     // GPay-style full reveal animation
     function animateFullReveal(canvas, ctx) {
@@ -550,7 +535,13 @@
         const centerY = canvas.height / 2;
         const maxRadius = Math.sqrt(centerX * centerX + centerY * centerY);
         let currentRadius = 0;
-        const speed = maxRadius / 20; // Complete in ~20 frames
+        const speed = maxRadius / 10; // Complete in ~10 frames (very fast)
+
+        const scratchSection = document.getElementById('scratch-section');
+
+        // Start poppers IMMEDIATELY during the wipe
+        createFireworkBurst(scratchSection, 40);
+        createGlitterShower(scratchSection, 60);
 
         ctx.globalCompositeOperation = 'destination-out';
 
@@ -559,42 +550,47 @@
             ctx.beginPath();
             ctx.arc(centerX, centerY, currentRadius, 0, Math.PI * 2);
             ctx.fill();
+            
+            // Pop holes for sparkler look
+            for (let i = 0; i < 10; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = currentRadius + Math.random() * 40;
+                const px = centerX + Math.cos(angle) * dist;
+                const py = centerY + Math.sin(angle) * dist;
+                ctx.beginPath();
+                ctx.arc(px, py, Math.random() * 20 + 10, 0, Math.PI * 2);
+                ctx.fill();
+            }
 
             if (currentRadius < maxRadius) {
                 requestAnimationFrame(eraseFrame);
             } else {
-                // Fully erased — now fade out canvas cleanly
-                canvas.style.transition = 'opacity 0.4s ease';
-                canvas.style.opacity = '0';
-                setTimeout(() => {
-                    canvas.style.display = 'none';
-                    // CELEBRATION BURST!
-                    const scratchSection = document.getElementById('scratch-section');
-                    createFireworkBurst(scratchSection, 35);
-                    createEmojiBurst(scratchSection, ['\uD83C\uDF89', '\uD83D\uDC8D', '\u2728', '\uD83C\uDF8A', '\uD83D\uDC95', '\uD83E\uDD73', '\u2764\uFE0F'], 25);
-                    createGlitterShower(scratchSection, 50);
-                    setTimeout(() => createFireworkBurst(scratchSection, 20), 600);
-                    setTimeout(() => createEmojiBurst(scratchSection, ['\uD83D\uDC9B', '\u2728', '\uD83C\uDF8A', '\uD83D\uDC8D'], 15), 1000);
+                // COMPLETELY REMOVE canvas from DOM so it can't block touches
+                canvas.remove();
+                    
+                // Second wave of poppers
+                createFireworkBurst(scratchSection, 30);
+                setTimeout(() => createFireworkBurst(scratchSection, 25), 500);
+                setTimeout(() => createGlitterShower(scratchSection, 40), 300);
 
-                    // Show "scroll to continue" hint after celebrations
-                    setTimeout(() => {
-                        const scrollHint = document.createElement('p');
-                        scrollHint.textContent = 'Swipe up to continue';
-                        scrollHint.style.cssText = `
-                            position: absolute;
-                            bottom: 30px;
-                            font-family: var(--font-sans);
-                            font-weight: 200;
-                            font-size: 0.7rem;
-                            letter-spacing: 3px;
-                            text-transform: uppercase;
-                            color: var(--gold-light);
-                            opacity: 0;
-                            animation: fadeInUp 0.8s ease forwards;
-                        `;
-                        scratchSection.appendChild(scrollHint);
-                    }, 2000);
-                }, 400);
+                // Show "scroll to continue" hint
+                setTimeout(() => {
+                    const scrollHint = document.createElement('p');
+                    scrollHint.textContent = '↑ Swipe up to continue ↑';
+                    scrollHint.style.cssText = `
+                        position: absolute;
+                        bottom: 30px;
+                        font-family: var(--font-sans);
+                        font-weight: 200;
+                        font-size: 0.75rem;
+                        letter-spacing: 3px;
+                        text-transform: uppercase;
+                        color: var(--gold-light);
+                        opacity: 0;
+                        animation: fadeInUp 0.8s ease forwards, subtleBounce 2s ease-in-out infinite 1s;
+                    `;
+                    scratchSection.appendChild(scrollHint);
+                }, 1500);
             }
         }
 
@@ -786,10 +782,7 @@
         createGlitterShower(container, 40);
     }
 
-    // ===== PREVENT SCROLL ON SCRATCH SECTION =====
-    document.getElementById('scratch-canvas')?.addEventListener('touchmove', function(e) {
-        e.stopPropagation();
-    }, { passive: false });
+    // Canvas touchmove blocking handled inside initScratchCard
 
     // ===== INJECT CELEBRATION CSS ANIMATIONS =====
     (function injectCelebrationStyles() {
