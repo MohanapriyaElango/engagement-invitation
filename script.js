@@ -11,6 +11,7 @@
     let isEnvelopeOpen = false;
     let scratchPercentage = 0;
     let musicPlaying = false;
+    let scratchRevealed = false;
 
     // ===== PRELOADER =====
     window.addEventListener('load', function() {
@@ -155,6 +156,8 @@
     document.addEventListener('wheel', function(e) {
         if (!isEnvelopeOpen) return;
         if (isTransitioning) return;
+        // Block navigation from scratch section until scratch is revealed
+        if (currentSection === 2 && !scratchRevealed) return;
         const now = Date.now();
         if (now - lastScrollTime < 1400) return;
         lastScrollTime = now;
@@ -184,6 +187,8 @@
 
         if (Math.abs(diff) < threshold) return;
         if (isTransitioning) return;
+        // Block navigation from scratch section until scratch is revealed
+        if (currentSection === 2 && !scratchRevealed) return;
 
         const now = Date.now();
         if (now - lastScrollTime < 1200) return;
@@ -508,6 +513,8 @@
     }
 
     function checkScratchProgress() {
+        if (scratchRevealed) return;
+
         const canvas = document.getElementById('scratch-canvas');
         const ctx = canvas.getContext('2d');
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -523,24 +530,75 @@
 
         const hint = document.getElementById('scratch-hint');
         
-        if (scratchPercentage > 20) {
+        if (scratchPercentage > 15) {
+            hint.textContent = '✨ Almost there... ✨';
+        }
+
+        // Like GPay: once ~25% scratched, auto-clear the entire card
+        if (scratchPercentage > 25) {
+            scratchRevealed = true;
             hint.classList.add('hidden');
-            // Auto-reveal when half scratched
-            if (scratchPercentage > 30) {
-                canvas.style.transition = 'opacity 0.8s ease';
+            
+            // Animate erasing remaining scratch layer (expanding circles from center)
+            animateFullReveal(canvas, ctx);
+        }
+    }
+
+    // GPay-style full reveal animation
+    function animateFullReveal(canvas, ctx) {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const maxRadius = Math.sqrt(centerX * centerX + centerY * centerY);
+        let currentRadius = 0;
+        const speed = maxRadius / 20; // Complete in ~20 frames
+
+        ctx.globalCompositeOperation = 'destination-out';
+
+        function eraseFrame() {
+            currentRadius += speed;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, currentRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (currentRadius < maxRadius) {
+                requestAnimationFrame(eraseFrame);
+            } else {
+                // Fully erased — now fade out canvas cleanly
+                canvas.style.transition = 'opacity 0.4s ease';
                 canvas.style.opacity = '0';
                 setTimeout(() => {
                     canvas.style.display = 'none';
-                    // CELEBRATION BURST on scratch reveal!
+                    // CELEBRATION BURST!
                     const scratchSection = document.getElementById('scratch-section');
                     createFireworkBurst(scratchSection, 35);
-                    createEmojiBurst(scratchSection, ['🎉', '💍', '✨', '🎊', '💕', '🥳', '❤️'], 25);
+                    createEmojiBurst(scratchSection, ['\uD83C\uDF89', '\uD83D\uDC8D', '\u2728', '\uD83C\uDF8A', '\uD83D\uDC95', '\uD83E\uDD73', '\u2764\uFE0F'], 25);
                     createGlitterShower(scratchSection, 50);
                     setTimeout(() => createFireworkBurst(scratchSection, 20), 600);
-                    setTimeout(() => createEmojiBurst(scratchSection, ['💛', '✨', '🎊', '💍'], 15), 1000);
-                }, 800);
+                    setTimeout(() => createEmojiBurst(scratchSection, ['\uD83D\uDC9B', '\u2728', '\uD83C\uDF8A', '\uD83D\uDC8D'], 15), 1000);
+
+                    // Show "scroll to continue" hint after celebrations
+                    setTimeout(() => {
+                        const scrollHint = document.createElement('p');
+                        scrollHint.textContent = 'Swipe up to continue';
+                        scrollHint.style.cssText = `
+                            position: absolute;
+                            bottom: 30px;
+                            font-family: var(--font-sans);
+                            font-weight: 200;
+                            font-size: 0.7rem;
+                            letter-spacing: 3px;
+                            text-transform: uppercase;
+                            color: var(--gold-light);
+                            opacity: 0;
+                            animation: fadeInUp 0.8s ease forwards;
+                        `;
+                        scratchSection.appendChild(scrollHint);
+                    }, 2000);
+                }, 400);
             }
         }
+
+        requestAnimationFrame(eraseFrame);
     }
 
     // ===== COUNTDOWN TIMER =====
