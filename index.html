@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jayanth & Ranjani - Engagement</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <p class="loader-text">Loading your invitation...</p>
+        </div>
+    </div>
+
+    <!-- Audio Toggle -->
+    <button id="audio-toggle" class="audio-btn" aria-label="Toggle Music">
+        <svg class="audio-icon playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
+        </svg>
+        <svg class="audio-icon muted hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="1" y1="1" x2="23" y2="23"/>
+            <path d="M9 18V5l12-2v13"/>
+        </svg>
+    </button>
+
+    <!-- Background Music (royalty-free) -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ===== SECTION 0: ENVELOPE OPENING ===== -->
+    <section id="envelope-section" class="section envelope-section">
+        <div class="floating-petals">
+            <div class="petal p1"></div>
+            <div class="petal p2"></div>
+            <div class="petal p3"></div>
+            <div class="petal p4"></div>
+            <div class="petal p5"></div>
+            <div class="petal p6"></div>
+        </div>
+        <div class="envelope-container">
+            <div class="envelope">
+                <div class="envelope-top"></div>
+                <div class="envelope-body">
+                    <div class="envelope-letter">
+                        <p class="envelope-preview">You're Invited!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="envelope-seal">
+                <span>&#10084;</span>
+            </div>
+            <p class="tap-text">Tap to Open</p>
+        </div>
+        <div class="corner-ornament top-left"></div>
+        <div class="corner-ornament top-right"></div>
+        <div class="corner-ornament bottom-left"></div>
+        <div class="corner-ornament bottom-right"></div>
+    </section>
+
+    <!-- ===== SECTION 1: WELCOME / INTRO ===== -->
+    <section id="welcome-section" class="section hidden-section">
+        <div class="particles-container" id="particles"></div>
+        <div class="welcome-content">
+            <div class="ornament-top"></div>
+            <p class="welcome-subtitle animate-text">With the blessings of the Almighty</p>
+            <h2 class="welcome-family animate-text delay-1">Together with their families</h2>
+            <div class="divider animate-text delay-2">
+                <span class="divider-line"></span>
+                <span class="divider-icon">&#10047;</span>
+                <span class="divider-line"></span>
+            </div>
+            <p class="welcome-invite animate-text delay-3">Request the pleasure of your company<br>at the engagement ceremony of</p>
+            <div class="ornament-bottom"></div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+            <p>Scroll Down</p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 2: NAMES REVEAL ===== -->
+    <section id="names-section" class="section hidden-section">
+        <div class="names-bg-pattern"></div>
+        <div class="names-content">
+            <div class="name-card groom-card">
+                <div class="name-ornament"></div>
+                <h1 class="name groom-name" data-text="Jayanth">Jayanth</h1>
+                <p class="name-label">The Groom</p>
+            </div>
+            <div class="ampersand-container">
+                <div class="ring-animation">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                </div>
+                <span class="ampersand">&</span>
+            </div>
+            <div class="name-card bride-card">
+                <div class="name-ornament"></div>
+                <h1 class="name bride-name" data-text="Ranjani">Ranjani</h1>
+                <p class="name-label">The Bride</p>
+            </div>
+        </div>
+        <div class="sparkles">
+            <div class="sparkle s1">✦</div>
+            <div class="sparkle s2">✧</div>
+            <div class="sparkle s3">✦</div>
+            <div class="sparkle s4">✧</div>
+            <div class="sparkle s5">✦</div>
+            <div class="sparkle s6">✧</div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 3: SCRATCH TO REVEAL ===== -->
+    <section id="scratch-section" class="section hidden-section">
+        <div class="scratch-container">
+            <h2 class="scratch-title">Scratch to Reveal the Details</h2>
+            <p class="scratch-subtitle">Use your finger or mouse to scratch below</p>
+            <div class="scratch-card-wrapper">
+                <div class="scratch-card">
+                    <canvas id="scratch-canvas"></canvas>
+                    <div class="scratch-content" id="scratch-content">
+                        <div class="revealed-content">
+                            <div class="revealed-ornament">❧</div>
+                            <h3>Save the Date</h3>
+                            <div class="revealed-date">
+                                <span class="date-day">2</span>
+                                <span class="date-month">July</span>
+                                <span class="date-year">2026</span>
+                            </div>
+                            <div class="revealed-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                                <span>12:00 PM</span>
+                            </div>
+                            <div class="revealed-venue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span>Kanchipuram</span>
+                            </div>
+                            <div class="revealed-ornament">❧</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="scratch-hint" id="scratch-hint">✨ Keep scratching to reveal! ✨</p>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 4: EVENT DETAILS ===== -->
+    <section id="details-section" class="section hidden-section">
+        <div class="details-container">
+            <div class="details-header">
+                <div class="mandala-decoration"></div>
+                <h2 class="details-title">Engagement Ceremony</h2>
+                <div class="details-subtitle-line"></div>
+            </div>
+            <div class="details-cards">
+                <div class="detail-card date-card">
+                    <div class="detail-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <h3>Date</h3>
+                    <p class="detail-main">2nd July 2026</p>
+                    <p class="detail-sub">Wednesday</p>
+                </div>
+                <div class="detail-card time-card">
+                    <div class="detail-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <h3>Time</h3>
+                    <p class="detail-main">12:00 PM</p>
+                    <p class="detail-sub">Muhurtham</p>
+                </div>
+                <div class="detail-card venue-card">
+                    <div class="detail-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <h3>Venue</h3>
+                    <p class="detail-main">Kanchipuram</p>
+                    <p class="detail-sub">Tamil Nadu, India</p>
+                </div>
+            </div>
+
+            <!-- Map Section -->
+            <div class="map-container">
+                <div class="map-wrapper">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124549.04832285!2d79.63440384!3d12.8342235!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52b905f9a05faf%3A0x109f71c94df6b80!2sKanchipuram%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                        width="100%" 
+                        height="200" 
+                        style="border:0; border-radius: 12px;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <a href="https://share.google/8CljfmZZLKlf0LuKx" target="_blank" rel="noopener" class="directions-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    Get Directions
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 5: COUNTDOWN ===== -->
+    <section id="countdown-section" class="section hidden-section">
+        <div class="countdown-bg"></div>
+        <div class="countdown-container">
+            <h2 class="countdown-title">Counting Down to the Big Day</h2>
+            <div class="countdown-timer" id="countdown">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="days">00</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-separator">:</div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="hours">00</div>
+                    <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-separator">:</div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="minutes">00</div>
+                    <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-separator">:</div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="seconds">00</div>
+                    <div class="countdown-label">Seconds</div>
+                </div>
+            </div>
+            <div class="hearts-float">
+                <span class="heart h1">♥</span>
+                <span class="heart h2">♥</span>
+                <span class="heart h3">♥</span>
+                <span class="heart h4">♥</span>
+                <span class="heart h5">♥</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 6: CLOSING ===== -->
+    <section id="closing-section" class="section hidden-section">
+        <div class="closing-container">
+            <div class="closing-ornament-top">❦</div>
+            <h2 class="closing-title">With Love & Joy</h2>
+            <p class="closing-text">We would be honoured by your gracious presence<br>at the celebration of our engagement</p>
+            <div class="closing-names">
+                <span class="closing-name">Jayanth</span>
+                <span class="closing-amp">&</span>
+                <span class="closing-name">Ranjani</span>
+            </div>
+            <div class="closing-date">2nd July 2026 • Kanchipuram</div>
+            <div class="closing-footer">
+                <p class="closing-quote">"Two souls, one heart"</p>
+            </div>
+            <div class="closing-ornament-bottom">❦</div>
+            <div class="confetti-container" id="confetti"></div>
+        </div>
+    </section>
+
+    <!-- Navigation Dots -->
+    <nav class="nav-dots" id="nav-dots">
+        <span class="dot active" data-section="0"></span>
+        <span class="dot" data-section="1"></span>
+        <span class="dot" data-section="2"></span>
+        <span class="dot" data-section="3"></span>
+        <span class="dot" data-section="4"></span>
+        <span class="dot" data-section="5"></span>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+</html>
